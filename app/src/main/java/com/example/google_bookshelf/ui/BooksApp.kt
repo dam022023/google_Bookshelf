@@ -27,7 +27,6 @@ import com.example.google_bookshelf.ui.screens.BooksViewModel
 import com.example.google_bookshelf.ui.screens.GoogleBooksResult
 import com.example.google_bookshelf.ui.screens.SearchScreenApp
 
-
 enum class Screens(@StringRes val title: Int) {
     Search(title = R.string.app_name),
     Results(title = R.string.results)
@@ -66,7 +65,8 @@ fun BooksApp() {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentScreen = backStackEntry?.destination?.route ?: Screens.Search.name
     val viewModel: BooksViewModel =
-        viewModel(factory = BooksViewModel.Factory)
+        viewModel()
+
     Scaffold(
         topBar = {
             BooksTopBar(
@@ -86,7 +86,7 @@ fun BooksApp() {
                 }
             }
             composable(Screens.Results.name){
-                GoogleBooksResult(viewModel.books.value ?: emptyList())
+                GoogleBooksResult(viewModel)
             }
         }
     }

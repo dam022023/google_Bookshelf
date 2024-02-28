@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import com.example.google_bookshelf.ui.BooksApp
 import com.example.google_bookshelf.ui.theme.Google_bookshelfTheme
 
-
 class MainActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

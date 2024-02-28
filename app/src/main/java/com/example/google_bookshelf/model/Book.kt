@@ -1,9 +1,14 @@
 package com.example.google_bookshelf.model
 
-import kotlinx.serialization.Serializable
+data class BookSearchResponse(
+    val items: List<Book>? = null
+)
 
-@Serializable
-data class Book (
+data class Book(
+    val volumeInfo: VolumeInfo? = null
+)
+
+data class VolumeInfo(
     val title: String? = null,
     val authors: List<String>? = null,
     val imageLinks: ImageLinks? = null,
@@ -13,4 +18,6 @@ data class Book (
 
 data class ImageLinks(
     val thumbnail: String? = null
-)
+) {
+    val httpsThumbnail: String? get() = thumbnail?.replace("http", "https")
+}

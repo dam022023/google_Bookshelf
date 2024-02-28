@@ -1,21 +1,14 @@
 package com.example.google_bookshelf.ui.screens
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.google_bookshelf.BooksApplication
-import com.example.google_bookshelf.data.BooksRepository
 import com.example.google_bookshelf.model.Book
+import com.example.google_bookshelf.network.RetrofitInstance
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
-import java.io.IOException
 
 sealed interface BooksUiState {
     data class Success(val amphibians: List<Book>) : BooksUiState
@@ -23,43 +16,24 @@ sealed interface BooksUiState {
     object Loading : BooksUiState
 }
 
-class BooksViewModel (private val booksRepository: BooksRepository) : ViewModel() {
-    var booksUiState : BooksUiState by mutableStateOf(BooksUiState.Loading)
-    private set
+class BooksViewModel  : ViewModel() {
 
-    private val _searchQuery = MutableLiveData<String>()
-    val searchQuery: LiveData<String> = _searchQuery
+    private val _bookSearch = MutableLiveData<String>()
+    val bookSearch: LiveData<String> = _bookSearch
 
-    private val _books = MutableLiveData<List<Book>>()
-    val books: LiveData<List<Book>> = _books
-
+    private val _books = MutableStateFlow<List<Book>>(emptyList())
+    val books: StateFlow<List<Book>> = _books
 
     fun getBooks(query: String) {
         viewModelScope.launch {
-            booksUiState = BooksUiState.Loading
-            booksUiState = try {
-                BooksUiState.Success(booksRepository.getBooks())
-            } catch (e: IOException) {
-                BooksUiState.Error
-            } catch (e: HttpException) {
-                BooksUiState.Error
-            }
+            val response =
+                RetrofitInstance.retrofitService.getBooks(query)
+            _books.value = response.items!!
         }
 
     }
 
-    fun updateSearchQuery(query: String) {
-        _searchQuery.value = query
-    }
-
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]
-                        as BooksApplication)
-                val booksRepository = application.container.booksRepository
-                BooksViewModel(booksRepository = booksRepository)
-            }
-        }
+    fun clearBookSearch(query: String) {
+        _bookSearch.value = query
     }
 }

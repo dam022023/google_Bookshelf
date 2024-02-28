@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -18,12 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.google_bookshelf.R
-import com.example.google_bookshelf.data.BooksRepository
+import com.example.google_bookshelf.ui.theme.PurpleGrey40
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreenApp(
     viewModel: BooksViewModel,
@@ -34,13 +32,13 @@ fun SearchScreenApp(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(top= 220.dp, start = 20.dp, end = 20.dp)
+
     ) {
+
         TextField(
             value = userInput,
-            onValueChange = {
-                userInput = it
-            },
+            onValueChange = { newText -> userInput = newText },
             label = { Text("Enter text") },
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done,
@@ -58,11 +56,14 @@ fun SearchScreenApp(
 
         Button(
             onClick = {
-                viewModel.updateSearchQuery(userInput)
+                viewModel.clearBookSearch(userInput)
                 searchButton()
                 viewModel.getBooks(userInput)
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = PurpleGrey40),
+
         ) {
             Text(stringResource(R.string.search))
         }
